@@ -67,7 +67,7 @@ body{
   to{opacity:1;}
 }
 
-input, button{
+input, select, button{
   width:100%;
   padding:12px;
   margin:10px 0;
@@ -79,6 +79,11 @@ button{
   color:#000;
   font-weight:bold;
   cursor:pointer;
+}
+
+label{
+  font-size:12px;
+  opacity:0.8;
 }
 
 .shake{
@@ -139,11 +144,35 @@ button{
 <!-- WIFI -->
 <div id="wifi" class="section">
   <h3>WIFI SYSTEM</h3>
-  <p>WIFI NAME</p>
-  <p>SECURITY</p>
-  <p>NETWORK USAGE</p>
-  <p>PRIVACY</p>
-  <p>AUTO CONNECT</p>
+
+  <label>WIFI</label>
+  <input id="wifiName" placeholder="Enter WiFi name">
+
+  <label>SECURITY</label>
+  <select id="security">
+    <option>None / Enhanced Open</option>
+    <option>WPA / WPA2 / WPA3 - Personal</option>
+  </select>
+
+  <label>NETWORK USAGE</label>
+  <select id="networkUsage">
+    <option>Detect Automatically</option>
+    <option>Treat as metered</option>
+    <option>Treat as unmetered</option>
+  </select>
+
+  <label>PRIVACY</label>
+  <select id="privacy">
+    <option>Use randomized MAC (default)</option>
+    <option>Use device MAC</option>
+  </select>
+
+  <label>AUTO-CONNECT</label>
+  <select id="autoConnect">
+    <option>ON</option>
+    <option>OFF</option>
+  </select>
+
   <button onclick="startBypass()">BYPASS</button>
   <pre id="terminal"></pre>
 </div>
@@ -152,8 +181,7 @@ button{
 <div id="error"></div>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyOhC3rDvxfP4e80b7MRKx6PKkebykphIxb8dRoXNtpmZEh4ei9rwCyLohVEMrXkX49/exec";
-let unlocked=false;
+const WEBAPP_URL = "PUT_YOUR_WEBAPP_URL_HERE";
 
 function show(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -166,7 +194,7 @@ function submitFeedback(){
 
   if(!a && !b){
     navigator.vibrate(200);
-    document.getElementById('home').classList.add('shake');
+    home.classList.add('shake');
     setTimeout(()=>home.classList.remove('shake'),300);
     return;
   }
@@ -179,13 +207,12 @@ function submitFeedback(){
     })
   });
 
-  unlocked=true;
   wifiBtn.classList.remove('locked');
   status.innerText="SYSTEM IS READY";
 }
 
 function startBypass(){
-  let t=document.getElementById("terminal");
+  let t=terminal;
   t.textContent="";
   let i=0;
 
@@ -218,12 +245,11 @@ function continueHack(){
 }
 
 function showError(){
-  const e=document.getElementById("error");
-  e.style.display="block";
+  error.style.display="block";
   navigator.vibrate([300,200,300,200,500]);
 
   let spam=setInterval(()=>{
-    e.innerHTML += "ERROR ERROR ERROR ERROR ERROR<br>";
+    error.innerHTML += "ERROR ERROR ERROR ERROR ERROR<br>";
   },100);
 
   setTimeout(()=>clearInterval(spam),5000);
