@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WiFi System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#000;
+  color:#0f0;
+  overflow:hidden;
+}
+
+/* SIDEBAR */
+#sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:80px;
+  height:100%;
+  background:#111;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:120px;
+}
+#sidebar button{
+  margin:10px 0;
+  background:none;
+  border:none;
+  color:#0f0;
+  font-size:14px;
+  cursor:pointer;
+}
+#sidebar button.locked{
+  opacity:0.3;
+  pointer-events:none;
+}
+
+/* HEADER TEXT */
+#title{
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+  padding:20px;
+  animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 5px #0f0;}
+  to{text-shadow:0 0 20px #0f0;}
+}
+
+/* CONTENT */
+.section{
+  display:none;
+  margin-left:90px;
+  padding:20px;
+  animation:fade 0.4s;
+}
+.section.active{display:block;}
+
+@keyframes fade{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1;}
+}
+
+input, button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:6px;
+}
+button{
+  background:#0f0;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.shake{
+  animation:shake 0.3s;
+}
+@keyframes shake{
+  0%{transform:translateX(0);}
+  25%{transform:translateX(-5px);}
+  50%{transform:translateX(5px);}
+  75%{transform:translateX(-5px);}
+  100%{transform:translateX(0);}
+}
+
+/* HACK TEXT */
+#terminal{
+  font-family:monospace;
+  font-size:13px;
+  white-space:pre-wrap;
+  color:#0f0;
+}
+
+/* ERROR */
+#error{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:red;
+  font-size:18px;
+  display:none;
+  overflow:hidden;
+}
+</style>
+</head>
+
+<body>
+
+<div id="title">
+  WIFI HACKING<br>
+  ONLY PRIVATE WIFI<br>
+  WIFI AT HOME<br>
+  NOT PISO WIFI
+</div>
+
+<div id="sidebar">
+  <button onclick="show('home')">HOME</button>
+  <button id="wifiBtn" class="locked" onclick="show('wifi')">WIFI</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active">
+  <h3>FEEDBACK</h3>
+  <input id="f1" placeholder="Feedback 1">
+  <input id="f2" placeholder="Feedback 2">
+  <button onclick="submitFeedback()">SUBMIT</button>
+  <p id="status"></p>
+</div>
+
+<!-- WIFI -->
+<div id="wifi" class="section">
+  <h3>WIFI SYSTEM</h3>
+  <p>WIFI NAME</p>
+  <p>SECURITY</p>
+  <p>NETWORK USAGE</p>
+  <p>PRIVACY</p>
+  <p>AUTO CONNECT</p>
+  <button onclick="startBypass()">BYPASS</button>
+  <pre id="terminal"></pre>
+</div>
+
+<!-- ERROR SCREEN -->
+<div id="error"></div>
+
+<script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyOhC3rDvxfP4e80b7MRKx6PKkebykphIxb8dRoXNtpmZEh4ei9rwCyLohVEMrXkX49/exec";
+let unlocked=false;
+
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function submitFeedback(){
+  const a=f1.value.trim();
+  const b=f2.value.trim();
+
+  if(!a && !b){
+    navigator.vibrate(200);
+    document.getElementById('home').classList.add('shake');
+    setTimeout(()=>home.classList.remove('shake'),300);
+    return;
+  }
+
+  fetch(WEBAPP_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      feedback1:a,
+      feedback2:b
+    })
+  });
+
+  unlocked=true;
+  wifiBtn.classList.remove('locked');
+  status.innerText="SYSTEM IS READY";
+}
+
+function startBypass(){
+  let t=document.getElementById("terminal");
+  t.textContent="";
+  let i=0;
+
+  let interval=setInterval(()=>{
+    t.textContent += Math.random().toString(36).substring(2)+"\n";
+    t.scrollTop=t.scrollHeight;
+    i++;
+    if(i>40){
+      clearInterval(interval);
+      askPrivate();
+    }
+  },350);
+}
+
+function askPrivate(){
+  terminal.textContent += "\nIT'S PRIVATE WIFI?\nYES | NO\n";
+  setTimeout(continueHack,2000);
+}
+
+function continueHack(){
+  let i=0;
+  let interval=setInterval(()=>{
+    terminal.textContent += Math.random().toString(36)+"\n";
+    i++;
+    if(i>15){
+      clearInterval(interval);
+      showError();
+    }
+  },300);
+}
+
+function showError(){
+  const e=document.getElementById("error");
+  e.style.display="block";
+  navigator.vibrate([300,200,300,200,500]);
+
+  let spam=setInterval(()=>{
+    e.innerHTML += "ERROR ERROR ERROR ERROR ERROR<br>";
+  },100);
+
+  setTimeout(()=>clearInterval(spam),5000);
+}
+</script>
+
+</body>
+</html>
